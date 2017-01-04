@@ -12,9 +12,7 @@ ifndef HAVE_GLIDE
 	@rm -rf $(GOOS)-$(GOARCH)
 endif
 
-glide: $(INTERNAL_BIN_DIR)/$(GOOS)/$(GOARCH)/glide
-
-installdeps: glide $(SRC_FILES)
+installdeps:
 	@echo "Installing dependencies..."
 	@PATH=$(INTERNAL_BIN_DIR)/$(GOOS)/$(GOARCH):$(PATH) glide install
 
