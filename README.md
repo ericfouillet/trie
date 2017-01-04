@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ericfouillet/trie.svg?branch=master)](https://travis-ci.org/ericfouillet/trie)
+
 # trie
 
 Basic trie implementations in Go.
