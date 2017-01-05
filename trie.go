@@ -6,9 +6,11 @@ package trie
  * Implementation of the Trie interface.
  */
 
-import "fmt"
-import "unicode/utf8"
-import "container/list"
+import (
+	"container/list"
+	"fmt"
+	"unicode/utf8"
+)
 
 // eof is used when a method is unable to extract a rune from a string
 const eof rune = -1
