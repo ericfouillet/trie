@@ -25,23 +25,23 @@ For now, the following is implemented:
 
 # Usage
 
-The base `Trie` requires to provide a `NodeDataExtractorFunc` function to extract the next token to process from a string. This allows implementing tries for your own usage.
+The base `Trie` requires to provide a `DataGetter` function to extract the next token to process from a string. This allows implementing tries for your own usage.
 
 A rune extractor is provided, to extract runes from a string. Build it as follows:
 
 ```
-tr := trie.New(trie.NodeDataExtractorFunc(trie.ExtractNextRuneElement))
+tr := trie.New(trie.RuneGetter)
 ```
 
 or, if using a `LinkedTrie`:
 
 ```
-tr := trie.NewLinked(trie.NodeDataExtractorFunc(trie.ExtractNextRuneElement))
+tr := trie.NewLinked(trie.RuneGetter)
 ```
 
-Alternatively, provide your own `NodeDataExtractorFunc` with the following signature:
+Alternatively, provide your own `DataGetter` with the following signature:
 
 ```
-// NodeDataExtractorFunc is a function that extracts a trie data from a string.
-type NodeDataExtractorFunc func(string) (interface{}, int, error)
+// DataGetter is a function that extracts a trie data from a string.
+type DataGetter func(string) (interface{}, int, error)
 ```
