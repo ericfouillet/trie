@@ -56,7 +56,7 @@ func TestStringReduxTrie(t *testing.T) {
 }
 
 func TestRuneTrie(t *testing.T) {
-	runes := [...]string{"日本語", "essaiTest", "こんにちは", "分からない", "パソコン"}
+	runes := [...]string{"日本語", "wordTest", "こんにちは", "読む", "パソコン"}
 	tr := New(RuneGetter)
 	for _, w := range runes {
 		tr.Add(w)
