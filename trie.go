@@ -65,15 +65,6 @@ func (t *Trie) Contains(s string) bool {
 	return t.children[w].Contains(s[n:])
 }
 
-// RuneGetter extracts the next RuneData to process from a string.
-func RuneGetter(s string) (interface{}, int, error) {
-	ru, n := utf8.DecodeRuneInString(s)
-	if ru == utf8.RuneError {
-		return eof, 0, fmt.Errorf("Could not decode rune in string %v", s)
-	}
-	return ru, n, nil
-}
-
 // NewLinked creates a new trie using a linked list to store children.
 func NewLinked(g DataGetter) *LinkedTrie {
 	return &LinkedTrie{isRoot: true, get: g}
@@ -137,4 +128,13 @@ func (t *LinkedTrie) Contains(s string) bool {
 		return true
 	}
 	return found.Contains(s[n:])
+}
+
+// RuneGetter extracts the next rune to process from a string.
+func RuneGetter(s string) (interface{}, int, error) {
+	ru, n := utf8.DecodeRuneInString(s)
+	if ru == utf8.RuneError {
+		return eof, 0, fmt.Errorf("Could not decode rune in string %v", s)
+	}
+	return ru, n, nil
 }
