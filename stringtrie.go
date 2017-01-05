@@ -4,45 +4,31 @@ package trie
  * ASCII tries are a special case because the maximum size of the
  * children is already known.
  * Mulitple implementations are provided, depending on the need:
- * - ASCIITrie: simple naive approach. Good for small alphabets.
- * - ASCIIReduxTrie: uses alphabet reduction. Good for larger alphabets.
+ * - ASCIITrie: simple naive approach. Use for small alphabets.
+ * - ASCIIReduxTrie: uses alphabet reduction. Use for larger alphabets.
  */
 
 import "fmt"
 
+// invalid is used as a return value when a string could not be parsed
+const invalid = -1
+
 // NewASCIITrie creates a new trie holding strings.
 func NewASCIITrie() *ASCIITrie {
-	return &ASCIITrie{root: newASCIITrieNode()}
+	return &ASCIITrie{isRoot: true}
 }
 
-func newASCIITrieNode() *asciiTrieNode {
-	return &asciiTrieNode{} // use zero values for both fields
+func newASCIITrieNode() *ASCIITrie {
+	return &ASCIITrie{isRoot: false}
 }
 
-// AddWord adds a new word to an existing string trie.
-func (t *ASCIITrie) AddWord(s string) error {
-	return t.root.addWordToNode(s)
-}
-
-// Contains returns true if a string trie contains the given word.
-func (t *ASCIITrie) Contains(s string) bool {
-	return t.root.hasPrefix(s)
-}
-
-func (t *asciiTrieNode) extractNextData(s string) (byte, error) {
-	c := s[0]
-	if c > 255 {
-		return byte(0), fmt.Errorf("Unexpected character in %v", s)
-	}
-	return c, nil
-}
-
-func (t *asciiTrieNode) addWordToNode(s string) error {
+// Add adds a new word to an existing string trie.
+func (t *ASCIITrie) Add(s string) error {
 	if len(s) == 0 {
 		t.isFullWord = true
 		return nil
 	}
-	c, err := t.extractNextData(s)
+	c, err := next(s)
 	if err != nil {
 		return err
 	}
@@ -50,14 +36,15 @@ func (t *asciiTrieNode) addWordToNode(s string) error {
 		t.children[c] = newASCIITrieNode()
 	}
 	t.children[c].data = byte(c)
-	return t.children[c].addWordToNode(s[1:])
+	return t.children[c].Add(s[1:])
 }
 
-func (t *asciiTrieNode) hasPrefix(s string) bool {
+// Contains returns true if a string trie contains the given word.
+func (t *ASCIITrie) Contains(s string) bool {
 	if s == "" {
 		return false
 	}
-	c, err := t.extractNextData(s)
+	c, err := next(s)
 	if err != nil {
 		return false
 	}
@@ -67,48 +54,33 @@ func (t *asciiTrieNode) hasPrefix(s string) bool {
 	if len(s) == 1 {
 		return true
 	}
-	return t.children[c].hasPrefix(s[1:])
+	return t.children[c].Contains(s[1:])
+}
+
+func next(s string) (byte, error) {
+	c := s[0]
+	if c > 255 {
+		return byte(0), fmt.Errorf("Unexpected character in %v", s)
+	}
+	return c, nil
 }
 
 // NewASCIIReduxTrie creates a new trie holding strings.
 func NewASCIIReduxTrie() *ASCIIReduxTrie {
-	return &ASCIIReduxTrie{root: newASCIIReduxTrieNode(false)}
+	return &ASCIIReduxTrie{isRoot: true, suffixByteMask: true}
 }
 
-func newASCIIReduxTrieNode(suffixByteMask bool) *asciiReduxTrieNode {
-	return &asciiReduxTrieNode{suffixByteMask: suffixByteMask} // use zero values for other fields
+func newASCIIReduxTrieNode(byteMask bool) *ASCIIReduxTrie {
+	return &ASCIIReduxTrie{isRoot: false, suffixByteMask: byteMask}
 }
 
-// AddWord adds a new word to an existing string trie.
-func (t *ASCIIReduxTrie) AddWord(s string) error {
-	return t.root.addWordToNode(s)
-}
-
-// Contains returns true if a string trie contains the given word.
-func (t *ASCIIReduxTrie) Contains(s string) bool {
-	return t.root.hasPrefix(s)
-}
-
-func (t *asciiReduxTrieNode) extractNextData(s string) (int, error) {
-	c := s[0]
-	if c > 255 {
-		return -1, fmt.Errorf("Unexpected character in %v", s)
-	}
-	data := int(c)
-	if t.suffixByteMask {
-		data = data & 0x0f
-	} else {
-		data = data >> 4 // shift to obtain a 4 bit integer
-	}
-	return data, nil
-}
-
-func (t *asciiReduxTrieNode) addWordToNode(s string) error {
+// Add adds a new word to an existing string trie.
+func (t *ASCIIReduxTrie) Add(s string) error {
 	if len(s) == 0 {
 		t.isFullWord = true
 		return nil
 	}
-	data, err := t.extractNextData(s)
+	data, err := next4(s, t.suffixByteMask)
 	if err != nil {
 		return err
 	}
@@ -117,17 +89,18 @@ func (t *asciiReduxTrieNode) addWordToNode(s string) error {
 	}
 	t.children[data].data = byte(data)
 	if t.suffixByteMask {
-		return t.children[data].addWordToNode(s[1:])
+		return t.children[data].Add(s[1:])
 	} else {
-		return t.children[data].addWordToNode(s)
+		return t.children[data].Add(s)
 	}
 }
 
-func (t *asciiReduxTrieNode) hasPrefix(s string) bool {
+// Contains returns true if a string trie contains the given word.
+func (t *ASCIIReduxTrie) Contains(s string) bool {
 	if s == "" {
 		return false
 	}
-	c, err := t.extractNextData(s)
+	c, err := next4(s, t.suffixByteMask)
 	if err != nil {
 		return false
 	}
@@ -138,8 +111,23 @@ func (t *asciiReduxTrieNode) hasPrefix(s string) bool {
 		return true
 	}
 	if t.suffixByteMask {
-		return t.children[c].hasPrefix(s[1:])
+		return t.children[c].Contains(s[1:])
 	} else {
-		return t.children[c].hasPrefix(s)
+		return t.children[c].Contains(s)
 	}
+}
+
+// Returns the next 4 bits word in the given string
+func next4(s string, suffixByteMask bool) (int, error) {
+	c := s[0]
+	if c > 255 {
+		return invalid, fmt.Errorf("Unexpected character in %v", s)
+	}
+	data := int(c)
+	if suffixByteMask {
+		data = data & 0x0f
+	} else {
+		data = data >> 4 // shift to obtain a 4 bit integer
+	}
+	return data, nil
 }

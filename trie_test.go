@@ -28,7 +28,7 @@ func TestStringTrie(t *testing.T) {
 			b = append(b, ch)
 		}
 		w := string(b)
-		tr.AddWord(w)
+		tr.Add(w)
 		if !tr.Contains(w) {
 			if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
 				return
@@ -50,7 +50,7 @@ func TestStringReduxTrie(t *testing.T) {
 			b = append(b, ch)
 		}
 		w := string(b)
-		tr.AddWord(w)
+		tr.Add(w)
 		if !tr.Contains(w) {
 			if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
 				return
@@ -61,9 +61,9 @@ func TestStringReduxTrie(t *testing.T) {
 
 func TestRuneTrie(t *testing.T) {
 	runes := [...]string{"日本語", "essaiTest", "こんにちは", "分からない", "パソコン"}
-	tr := New(NodeDataExtractorFunc(ExtractNextRuneElement))
+	tr := New(RuneGetter)
 	for _, w := range runes {
-		tr.AddWord(w)
+		tr.Add(w)
 		if !tr.Contains(w) {
 			if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
 				return
@@ -74,9 +74,9 @@ func TestRuneTrie(t *testing.T) {
 
 func TestLinkedRuneTrie(t *testing.T) {
 	runes := [...]string{"日本語", "essaiTest", "こんにちは", "分からない", "パソコン"}
-	tr := NewLinked(NodeDataExtractorFunc(ExtractNextRuneElement))
+	tr := NewLinked(RuneGetter)
 	for _, w := range runes {
-		tr.AddWord(w)
+		tr.Add(w)
 		if !tr.Contains(w) {
 			if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
 				return
