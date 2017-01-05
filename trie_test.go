@@ -29,10 +29,8 @@ func TestStringTrie(t *testing.T) {
 		}
 		w := string(b)
 		tr.Add(w)
-		if !tr.Contains(w) {
-			if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
-				return
-			}
+		if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
+			return
 		}
 	}
 }
@@ -51,10 +49,8 @@ func TestStringReduxTrie(t *testing.T) {
 		}
 		w := string(b)
 		tr.Add(w)
-		if !tr.Contains(w) {
-			if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
-				return
-			}
+		if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
+			return
 		}
 	}
 }
@@ -64,10 +60,8 @@ func TestRuneTrie(t *testing.T) {
 	tr := New(RuneGetter)
 	for _, w := range runes {
 		tr.Add(w)
-		if !tr.Contains(w) {
-			if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
-				return
-			}
+		if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
+			return
 		}
 	}
 }
@@ -77,10 +71,8 @@ func TestLinkedRuneTrie(t *testing.T) {
 	tr := NewLinked(RuneGetter)
 	for _, w := range runes {
 		tr.Add(w)
-		if !tr.Contains(w) {
-			if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
-				return
-			}
+		if !assert.True(t, tr.Contains(w), "The trie shoud contain %v", w) {
+			return
 		}
 	}
 }
