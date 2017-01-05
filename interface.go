@@ -15,6 +15,7 @@ type Trier interface {
 }
 
 // DataGetter is a function that extracts a trie data from a string.
+// It returns the data, the number of bytes read, and an error (if any)
 type DataGetter func(string) (interface{}, int, error)
 
 // Trie is a generic implementation of a trie.
